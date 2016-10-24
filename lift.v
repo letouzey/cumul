@@ -84,7 +84,8 @@ Definition f_prop' := f ((fun _ => up I), I).
 
 End Poly.
 
-Recursive Extraction Poly.
+(** Refused by polyprop check *)
+(*Recursive Extraction Poly. *)
 
 
 
@@ -108,3 +109,17 @@ End Fix.
 
 Recursive Extraction Fix.
 (* etrange, des (fun x ->...) au lieu de (fun _ ->...) dans f_prop' *)
+
+
+(* A nat_ind via explicit cumul out of nat_rect *)
+
+Check nat_ind.
+
+Definition nat_ind
+ (P:nat->Prop)(h0:P 0)(hS:forall n, P n -> P (S n)) n : P n :=
+ let P' := fun n => lift (P n) in
+ down
+   (nat_rect P'
+      (up h0)
+      (fun n (h:P' n) => up (hS n (down h)))
+      n).
